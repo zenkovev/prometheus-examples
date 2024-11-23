@@ -1,0 +1,29 @@
+services:
+  postgres_dbms:
+    image: postgres:16.4-alpine3.20
+    container_name: postgres_dbms
+    hostname: databasehost
+    environment:
+      POSTGRES_DATABASE: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    # We are not waiting for postgres to start.
+    # Monitoring is just getting a few errors.
+
+  metrics_go:
+    image: metrics_go:0.0.0
+    container_name: metrics_go
+    build: ./metrics_go/
+    depends_on:
+      - postgres_dbms
+    ports:
+      - 127.0.0.1:8001:8080
+
+  metrics_python:
+    image: metrics_python:0.0.0
+    container_name: metrics_python
+    build: ./metrics_py/
+    depends_on:
+      - postgres_dbms
+    ports:
+      - 127.0.0.1:8002:8080
